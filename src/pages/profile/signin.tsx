@@ -97,11 +97,13 @@ const SigninProfile = () => {
     credentials: CredentialRepresentation[]
   ): TableRows => {
     const metadatas: UserCredentialMetadataRepresentation[] = [];
+    let credentialRep : CredentialRepresentation
     credentials
       .filter((credential) => credential.type === credentialType)
       .forEach((credential) => {
         if (credential.userCredentialMetadatas) {
           metadatas.push(...credential.userCredentialMetadatas);
+          credentialRep = credential
         }
       });
     return metadatas.map((metadata) => ({
@@ -109,7 +111,7 @@ const SigninProfile = () => {
       created: time(metadata.credential?.createdDate),
       action: (
         <>
-          {featureFlags.passwordUpdateAllowed && (
+          {(featureFlags.passwordUpdateAllowed || (credentialType == CredentialType.WEB_AUTH_N_PASSWORDLESS_REGISTER && credentialRep.removeable)) && (
             <Button
               isCompact
               className="inline-flex w-full justify-center sm:ml-3 sm:w-auto"
